@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatController extends Controller
 {
-    public function __construct(private string $aiBaseUrl = '')
+    public function __construct(private string $aiBaseUrl = '', private Client $client = new Client())
     {
         $this->aiBaseUrl = config('openai.base_url');
     }
@@ -47,8 +47,7 @@ class ChatController extends Controller
     
             $history[] = ['role' => AiChatRole::User->value, 'content' => $prompt];
         
-            $client = new Client();
-            $response = $client->post("{$this->aiBaseUrl}/chat/completions", [
+            $response = $this->client->post("{$this->aiBaseUrl}/chat/completions", [
                 'headers' => [
                     'Authorization' => 'Bearer ' . config('openai.api_key'),
                     'Content-Type' => 'application/json',
